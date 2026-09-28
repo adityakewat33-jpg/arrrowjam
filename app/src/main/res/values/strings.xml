@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Arrow Jam</string>
+    <string name="hint">Hint</string>
+    <string name="undo">Undo</string>
+    <string name="restart">Restart</string>
+    <string name="levels">Levels</string>
+    <string name="random_level">Endless</string>
+    <string name="level_cleared">LEVEL CLEARED!</string>
+    <string name="next_level">NEXT LEVEL</string>
+    <string name="replay">REPLAY</string>
+</resources>

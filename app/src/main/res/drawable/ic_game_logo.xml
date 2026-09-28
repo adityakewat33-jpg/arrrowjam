@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+
+    <!-- 3x3 Background Dots (Pure M, L, Z for 100% universal Android compatibility) -->
+    <!-- Row 1 -->
+    <path android:fillColor="#334155" android:pathData="M14,14 L18,14 L18,18 L14,18 Z" />
+    <path android:fillColor="#334155" android:pathData="M30,14 L34,14 L34,18 L30,18 Z" />
+    <path android:fillColor="#334155" android:pathData="M46,14 L50,14 L50,18 L46,18 Z" />
+
+    <!-- Row 2 -->
+    <path android:fillColor="#334155" android:pathData="M14,30 L18,30 L18,34 L14,34 Z" />
+    <path android:fillColor="#334155" android:pathData="M30,30 L34,30 L34,34 L30,34 Z" />
+    <path android:fillColor="#334155" android:pathData="M46,30 L50,30 L50,34 L46,34 Z" />
+
+    <!-- Row 3 -->
+    <path android:fillColor="#334155" android:pathData="M14,46 L18,46 L18,50 L14,50 Z" />
+    <path android:fillColor="#334155" android:pathData="M30,46 L34,46 L34,50 L30,50 Z" />
+    <path android:fillColor="#334155" android:pathData="M46,46 L50,46 L50,50 L46,50 Z" />
+
+    <!-- 1. Neon Yellow Arrow (Escaping UP) -->
+    <path
+        android:pathData="M16,48 L16,22"
+        android:strokeColor="#FFE600"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M10,24 L16,14 L22,24 Z"
+        android:fillColor="#FFE600" />
+
+    <!-- 2. Neon Cyan Arrow (L-bend Escaping RIGHT) -->
+    <path
+        android:pathData="M16,16 L32,16 L32,32 L44,32"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M42,26 L52,32 L42,38 Z"
+        android:fillColor="#00E5FF" />
+
+    <!-- 3. Neon Pink Arrow (Escaping DOWN) -->
+    <path
+        android:pathData="M48,16 L48,42"
+        android:strokeColor="#FF2A85"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M42,40 L48,50 L54,40 Z"
+        android:fillColor="#FF2A85" />
+
+    <!-- 4. Neon Green Arrow (Escaping LEFT) -->
+    <path
+        android:pathData="M48,48 L22,48"
+        android:strokeColor="#39FF14"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M24,54 L14,48 L24,42 Z"
+        android:fillColor="#39FF14" />
+
+</vector>

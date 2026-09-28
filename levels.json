@@ -1,0 +1,97 @@
+{
+  "version": 2,
+  "levels": [
+    {
+      "id": 201,
+      "name": "Level 201 • Neon Wave",
+      "rows": 8,
+      "cols": 8,
+      "arrows": [
+        {
+          "dots": [[1, 1], [1, 2], [1, 3]],
+          "color": "#00E5FF"
+        },
+        {
+          "dots": [[2, 1], [2, 2], [2, 3]],
+          "color": "#FF2A85"
+        },
+        {
+          "dots": [[3, 1], [3, 2], [3, 3]],
+          "color": "#FFE600"
+        },
+        {
+          "dots": [[4, 1], [4, 2], [4, 3]],
+          "color": "#39FF14"
+        }
+      ]
+    },
+    {
+      "id": 202,
+      "name": "Level 202 • Cyber Vortex",
+      "rows": 8,
+      "cols": 8,
+      "arrows": [
+        {
+          "dots": [[1, 2], [1, 3], [1, 4]],
+          "color": "#FF007F"
+        },
+        {
+          "dots": [[2, 2], [2, 3], [2, 4]],
+          "color": "#00F0FF"
+        },
+        {
+          "dots": [[3, 2], [3, 3], [3, 4]],
+          "color": "#B026FF"
+        }
+      ]
+    },
+    {
+      "id": 203,
+      "name": "Level 203 • Quantum Drift",
+      "rows": 9,
+      "cols": 9,
+      "arrows": [
+        {
+          "dots": [[1, 1], [1, 2], [1, 3], [1, 4]],
+          "color": "#00E5FF"
+        },
+        {
+          "dots": [[2, 1], [2, 2], [2, 3], [2, 4]],
+          "color": "#FFE600"
+        }
+      ]
+    },
+    {
+      "id": 204,
+      "name": "Level 204 • Solar Flare",
+      "rows": 9,
+      "cols": 9,
+      "arrows": [
+        {
+          "dots": [[2, 3], [2, 4], [2, 5]],
+          "color": "#FF4800"
+        },
+        {
+          "dots": [[3, 3], [3, 4], [3, 5]],
+          "color": "#FFAA00"
+        }
+      ]
+    },
+    {
+      "id": 205,
+      "name": "Level 205 • Cosmic Zenith",
+      "rows": 10,
+      "cols": 10,
+      "arrows": [
+        {
+          "dots": [[2, 2], [2, 3], [2, 4]],
+          "color": "#FFD700"
+        },
+        {
+          "dots": [[3, 2], [3, 3], [3, 4]],
+          "color": "#DFB15B"
+        }
+      ]
+    }
+  ]
+}
