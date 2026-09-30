@@ -36,7 +36,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
 
     private var currentLevelIndex: Int = 0
-    private var currentLives: Int = 3
+    private var currentLives: Int = MAX_LIVES
+    private var lifeAdsWatchedThisLevel: Int = 0
+
+    companion object {
+        const val MAX_LIVES = 3
+        const val MAX_LIFE_ADS_PER_LEVEL = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -214,24 +220,31 @@ class MainActivity : AppCompatActivity() {
 
         // 2. Extra Life (+1 Life via Rewarded Video)
         binding.btnExtraLife.setOnClickListener {
-            if (currentLives >= 5) {
-                Toast.makeText(this, "Maximum lives reached! (5 lives)", Toast.LENGTH_SHORT).show()
+            if (currentLives >= MAX_LIVES) {
+                Toast.makeText(this, "Lives are already full! (3/3)", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (lifeAdsWatchedThisLevel >= MAX_LIFE_ADS_PER_LEVEL) {
+                Toast.makeText(this, "Ad limit reached for this level (2/2 watched)", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             playRewardedAd("+1 Extra Life") {
-                currentLives++
+                lifeAdsWatchedThisLevel++
+                currentLives = (currentLives + 1).coerceAtMost(MAX_LIVES)
                 if (binding.gameBoardView.isGameOver) {
                     binding.gameBoardView.isGameOver = false
                 }
                 updateLivesUI()
-                Toast.makeText(this@MainActivity, "❤️ +1 Extra Life granted!", Toast.LENGTH_SHORT).show()
+                val left = MAX_LIFE_ADS_PER_LEVEL - lifeAdsWatchedThisLevel
+                Toast.makeText(this@MainActivity, "❤️ +1 Life added! ($left ad${if (left == 1) "" else "s"} left)", Toast.LENGTH_SHORT).show()
             }
         }
 
         // 3. Replay Button
         binding.btnRestart.setOnClickListener {
             soundManager.playBump()
-            currentLives = 3
+            currentLives = MAX_LIVES
+            lifeAdsWatchedThisLevel = 0
             binding.gameBoardView.isGameOver = false
             updateLivesUI()
             binding.gameBoardView.restart()
@@ -315,12 +328,32 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateLivesUI() {
         val hearts = when {
-            currentLives >= 3 -> "❤️".repeat(currentLives)
+            currentLives >= 3 -> "❤️❤️❤️"
             currentLives == 2 -> "❤️❤️🖤"
             currentLives == 1 -> "❤️🖤🖤"
             else -> "🖤🖤🖤"
         }
         binding.tvGameLives.text = hearts
+
+        // Extra Life button visual state according to 3-life limit and 2-ad maximum
+        when {
+            currentLives >= MAX_LIVES -> {
+                binding.btnExtraLife.alpha = 0.5f
+                binding.tvExtraLifeSubtitle.text = "Full (3/3)"
+                binding.tvExtraLifeSubtitle.setTextColor(getColor(R.color.text_secondary))
+            }
+            lifeAdsWatchedThisLevel >= MAX_LIFE_ADS_PER_LEVEL -> {
+                binding.btnExtraLife.alpha = 0.4f
+                binding.tvExtraLifeSubtitle.text = "Limit (2/2)"
+                binding.tvExtraLifeSubtitle.setTextColor(getColor(R.color.text_secondary))
+            }
+            else -> {
+                val remaining = MAX_LIFE_ADS_PER_LEVEL - lifeAdsWatchedThisLevel
+                binding.btnExtraLife.alpha = 1.0f
+                binding.tvExtraLifeSubtitle.text = "Ad ($remaining left)"
+                binding.tvExtraLifeSubtitle.setTextColor(getColor(R.color.accent_emerald))
+            }
+        }
     }
 
     private fun updateHintUI() {
@@ -468,7 +501,8 @@ class MainActivity : AppCompatActivity() {
         currentLevelIndex = fullLevel.id - 1
         prefs.edit().putInt("saved_level_index", currentLevelIndex).apply()
 
-        currentLives = 3
+        currentLives = MAX_LIVES
+        lifeAdsWatchedThisLevel = 0
         binding.gameBoardView.isGameOver = false
         updateLivesUI()
         updateHintUI()
@@ -506,8 +540,13 @@ class MainActivity : AppCompatActivity() {
             gravity = android.view.Gravity.CENTER
             setPadding(0, 8, 0, 4)
         }
+        val remainingAds = (MAX_LIFE_ADS_PER_LEVEL - lifeAdsWatchedThisLevel).coerceAtLeast(0)
         val message = TextView(this).apply {
-            text = "You touched blocked arrows 3 times.\nWatch an ad to revive with +3 lives, or replay the level."
+            text = if (remainingAds > 0) {
+                "You lost all 3 lives.\nWatch an ad to revive with +1 life ($remainingAds left), or replay the level."
+            } else {
+                "You lost all 3 lives.\nAd limit reached for this level (2/2). Replay to try again!"
+            }
             textSize = 13f
             setTextColor(getColor(R.color.text_secondary))
             gravity = android.view.Gravity.CENTER
@@ -515,20 +554,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         val btnRevive = Button(this).apply {
-            text = "🎬 Revive with +3 Lives"
-            setTextColor(Color.WHITE)
-            setBackgroundResource(R.drawable.bg_btn_primary)
+            if (remainingAds > 0) {
+                text = "🎬 Revive with +1 Life ($remainingAds left)"
+                setTextColor(Color.WHITE)
+                setBackgroundResource(R.drawable.bg_btn_primary)
+                isEnabled = true
+                alpha = 1.0f
+                setOnClickListener {
+                    dialog.dismiss()
+                    playRewardedAd("Revive Life") {
+                        lifeAdsWatchedThisLevel++
+                        currentLives = 1
+                        binding.gameBoardView.isGameOver = false
+                        updateLivesUI()
+                        Toast.makeText(this@MainActivity, "❤️ Revived with +1 Life!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                text = "🚫 Ad Limit Reached (2/2)"
+                setTextColor(getColor(R.color.text_secondary))
+                setBackgroundResource(R.drawable.bg_button)
+                isEnabled = false
+                alpha = 0.5f
+            }
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120).apply {
                 bottomMargin = 14
-            }
-            setOnClickListener {
-                dialog.dismiss()
-                playRewardedAd("Full Revive") {
-                    currentLives = 3
-                    binding.gameBoardView.isGameOver = false
-                    updateLivesUI()
-                    Toast.makeText(this@MainActivity, "❤️ Restored +3 Lives!", Toast.LENGTH_SHORT).show()
-                }
             }
         }
 
@@ -541,7 +591,8 @@ class MainActivity : AppCompatActivity() {
             }
             setOnClickListener {
                 dialog.dismiss()
-                currentLives = 3
+                currentLives = MAX_LIVES
+                lifeAdsWatchedThisLevel = 0
                 binding.gameBoardView.isGameOver = false
                 updateLivesUI()
                 binding.gameBoardView.restart()
@@ -740,7 +791,8 @@ class MainActivity : AppCompatActivity() {
 
         btnReplay.setOnClickListener {
             dialog.dismiss()
-            currentLives = 3
+            currentLives = MAX_LIVES
+            lifeAdsWatchedThisLevel = 0
             binding.gameBoardView.isGameOver = false
             updateLivesUI()
             binding.gameBoardView.restart()
