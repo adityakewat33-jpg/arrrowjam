@@ -514,152 +514,218 @@ object DotGridLevelGenerator {
     }
 
     // --- Master Level Specification Generator (200 Progressive Levels) ---
+    // Every 5 levels (tier5), the difficulty and number of arrows strictly increase!
     fun getLevelSpec(lvlNum: Int): LevelSpec {
-        // Tier 1: Small Levels (1 to 20) -> 1 Single Shape with dynamically varying scale (Small, Medium, Large)
-        if (lvlNum <= 20) {
-            val scale = when (lvlNum % 3) {
-                1 -> ShapeScale.SMALL    // Decreased area!
-                2 -> ShapeScale.MEDIUM   // Standard area
-                else -> ShapeScale.LARGE // Increased area!
-            }
-            val (shapeName, dots) = getShapeByIndex(lvlNum - 1, 2, 2, scale)
-            val maxR = dots.maxOf { it.first } + 2
-            val maxC = dots.maxOf { it.second } + 2
-            val name = "Totem $lvlNum ($shapeName)"
-            return LevelSpec(name, maxR, maxC, listOf(dots))
-        }
+        val tier5 = (lvlNum - 1) / 5   // 0 for Lv 1-5, 1 for Lv 6-10, 2 for Lv 11-15, etc.
+        val sub = (lvlNum - 1) % 5    // 0 to 4 within the 5-level tier
 
-        // Tier 2: Twin Islands (21 to 50) -> 2 Shapes with contrasting/varying scales
-        else if (lvlNum <= 50) {
-            val idx = lvlNum - 20
-            val (sc1, sc2) = when (idx % 4) {
-                1 -> ShapeScale.LARGE to ShapeScale.SMALL  // Grand Titan & Mini Satellite
-                2 -> ShapeScale.SMALL to ShapeScale.LARGE  // Mini Satellite & Grand Titan
-                3 -> ShapeScale.SMALL to ShapeScale.SMALL  // Dual Mini Islands
-                else -> ShapeScale.MEDIUM to ShapeScale.MEDIUM // Dual Balanced
-            }
-            val (sName1, dots1) = getShapeByIndex(idx - 1, 2, 2, sc1)
-            val (sName2, dots2) = if (idx % 2 == 1) {
-                // Horizontal twin shapes (side-by-side)
-                val cOffset = dots1.maxOf { it.second } + 4
-                getShapeByIndex(idx, 2, cOffset, sc2)
-            } else {
-                // Vertical twin shapes (stacked)
-                val rOffset = dots1.maxOf { it.first } + 4
-                getShapeByIndex(idx, rOffset, 2, sc2)
-            }
-            val allDots = dots1 + dots2
-            val rows = allDots.maxOf { it.first } + 3
-            val cols = allDots.maxOf { it.second } + 3
-            val name = "Twin $sName1 & $sName2 ($idx)"
-            return LevelSpec(name, rows, cols, listOf(dots1, dots2))
-        }
-
-        // Tier 3: 4-Shape Constellations (51 to 90) -> 2x2 Grid of alternating Small, Medium, Large shapes
-        else if (lvlNum <= 90) {
-            val idx = lvlNum - 50
-            val gap = 3
-            val clusters = mutableListOf<List<Pair<Int, Int>>>()
-            val shapeNames = mutableListOf<String>()
-
-            for (gr in 0 until 2) {
-                for (gc in 0 until 2) {
-                    val shapeIdx = (idx + gr * 2 + gc)
-                    val scale = when ((idx + gr + gc) % 3) {
-                        0 -> ShapeScale.SMALL
-                        1 -> ShapeScale.MEDIUM
-                        else -> ShapeScale.LARGE
-                    }
-                    val r0 = 2 + gr * (12 + gap)
-                    val c0 = 2 + gc * (12 + gap)
-                    val (sName, d) = getShapeByIndex(shapeIdx, r0, c0, scale)
-                    clusters.add(d)
-                    if (shapeNames.size < 2) shapeNames.add(sName)
+        when (tier5) {
+            // Tier 0 (Levels 1 to 5): Intro Mini Shapes (9 to 19 dots -> 3 to 7 arrows, straight tutorial arrows)
+            0 -> {
+                val (shapeIdx, shapeScale) = when (sub) {
+                    0 -> 3 to ShapeScale.SMALL    // Cross Mini: 9 dots -> ~3-4 straight arrows
+                    1 -> 6 to ShapeScale.SMALL    // Star Mini: 13 dots -> ~4-5 arrows
+                    2 -> 2 to ShapeScale.SMALL    // Kite Mini: 14 dots -> ~4-5 arrows
+                    3 -> 0 to ShapeScale.SMALL    // Heart Mini: 16 dots -> ~5-6 arrows
+                    else -> 4 to ShapeScale.SMALL // Shield Mini: 19 dots -> ~6-7 arrows
                 }
+                val (sName, dots) = getShapeByIndex(shapeIdx, 2, 2, shapeScale)
+                val maxR = dots.maxOf { it.first } + 2
+                val maxC = dots.maxOf { it.second } + 2
+                return LevelSpec("Totem $lvlNum ($sName)", maxR, maxC, listOf(dots))
             }
-            val allDots = clusters.flatten()
-            val rows = allDots.maxOf { it.first } + 3
-            val cols = allDots.maxOf { it.second } + 3
-            val name = "Constellation ${shapeNames.joinToString("&")} ($idx)"
-            return LevelSpec(name, rows, cols, clusters)
-        }
 
-        // Tier 4: 6-Shape Archipelagos (91 to 130) -> 3x2 Grid of varying sizes
-        else if (lvlNum <= 130) {
-            val idx = lvlNum - 90
-            val gap = 3
-            val clusters = mutableListOf<List<Pair<Int, Int>>>()
-            for (gr in 0 until 3) {
-                for (gc in 0 until 2) {
-                    val scale = when ((idx + gr * 2 + gc) % 3) {
-                        0 -> ShapeScale.SMALL
-                        1 -> ShapeScale.MEDIUM
-                        else -> ShapeScale.LARGE
-                    }
-                    val r0 = 2 + gr * (12 + gap)
-                    val c0 = 2 + gc * (12 + gap)
-                    val (_, d) = getShapeByIndex(idx + gr * 2 + gc, r0, c0, scale)
-                    clusters.add(d)
+            // Tier 1 (Levels 6 to 10): Compact Shapes (22 to 34 dots -> 7 to 11 arrows)
+            1 -> {
+                val (shapeIdx, shapeScale) = when (sub) {
+                    0 -> 11 to ShapeScale.SMALL     // Anchor Mini: 22 dots -> ~7-8 arrows
+                    1 -> 13 to ShapeScale.MEDIUM    // Swords Medium: 26 dots -> ~8-9 arrows
+                    2 -> 0 to ShapeScale.MEDIUM     // Heart Medium: 28 dots -> ~9 arrows
+                    3 -> 2 to ShapeScale.MEDIUM     // Kite Medium: 30 dots -> ~9-10 arrows
+                    else -> 12 to ShapeScale.MEDIUM // Planet Medium: 34 dots -> ~10-11 arrows
                 }
+                val (sName, dots) = getShapeByIndex(shapeIdx, 2, 2, shapeScale)
+                val maxR = dots.maxOf { it.first } + 2
+                val maxC = dots.maxOf { it.second } + 2
+                return LevelSpec("Totem $lvlNum ($sName)", maxR, maxC, listOf(dots))
             }
-            val allDots = clusters.flatten()
-            val rows = allDots.maxOf { it.first } + 3
-            val cols = allDots.maxOf { it.second } + 3
-            return LevelSpec("Hexa Archipelago $idx", rows, cols, clusters)
-        }
 
-        // Tier 5: 9-Shape Galaxies (131 to 170) -> 3x3 Grid of Shapes
-        else if (lvlNum <= 170) {
-            val idx = lvlNum - 130
-            val gap = 3
-            val clusters = mutableListOf<List<Pair<Int, Int>>>()
-            for (gr in 0 until 3) {
-                for (gc in 0 until 3) {
-                    val scale = if (gr == 1 && gc == 1) {
-                        ShapeScale.LARGE
-                    } else if ((gr + gc) % 2 == 0) {
-                        ShapeScale.SMALL
-                    } else {
-                        ShapeScale.MEDIUM
-                    }
-                    val r0 = 2 + gr * (12 + gap)
-                    val c0 = 2 + gc * (12 + gap)
-                    val (_, d) = getShapeByIndex(idx + gr * 3 + gc, r0, c0, scale)
-                    clusters.add(d)
+            // Tier 2 (Levels 11 to 15): Medium Monoliths (38 to 48 dots -> 12 to 15 arrows)
+            2 -> {
+                val (shapeIdx, shapeScale) = when (sub) {
+                    0 -> 1 to ShapeScale.MEDIUM     // Diamond Medium: 40 dots -> ~11-12 arrows
+                    1 -> 6 to ShapeScale.MEDIUM     // Star Medium: 40 dots -> ~12-13 arrows
+                    2 -> 7 to ShapeScale.MEDIUM     // Crown Medium: 40 dots -> ~13 arrows
+                    3 -> 3 to ShapeScale.MEDIUM     // Cross Medium: 48 dots -> ~14-15 arrows
+                    else -> 4 to ShapeScale.MEDIUM   // Shield Medium: 48 dots -> ~15 arrows
                 }
+                val (sName, dots) = getShapeByIndex(shapeIdx, 2, 2, shapeScale)
+                val maxR = dots.maxOf { it.first } + 2
+                val maxC = dots.maxOf { it.second } + 2
+                return LevelSpec("Totem $lvlNum ($sName)", maxR, maxC, listOf(dots))
             }
-            val allDots = clusters.flatten()
-            val rows = allDots.maxOf { it.first } + 3
-            val cols = allDots.maxOf { it.second } + 3
-            return LevelSpec("Nonagon Galaxy $idx", rows, cols, clusters)
-        }
 
-        // Tier 6: Grandmaster Cosmos & Multiverse (171 to 200) -> 16 to 25 Shapes up to 100x100!
-        else {
-            val idx = lvlNum - 170
-            val gCount = if (idx <= 15) 4 else 5
-            val boardDim = if (idx <= 15) 56 + (idx * 2) else 80 + (idx - 15) * 2
-            val gap = (boardDim - gCount * 12) / (gCount + 1).coerceAtLeast(1)
-            val clusters = mutableListOf<List<Pair<Int, Int>>>()
-            for (gr in 0 until gCount) {
-                for (gc in 0 until gCount) {
-                    val scale = when ((idx + gr * gCount + gc) % 3) {
-                        0 -> ShapeScale.SMALL
-                        1 -> ShapeScale.MEDIUM
-                        else -> ShapeScale.LARGE
-                    }
-                    val r0 = gap + gr * (12 + gap)
-                    val c0 = gap + gc * (12 + gap)
-                    val (_, d) = getShapeByIndex(idx + gr * gCount + gc, r0, c0, scale)
-                    clusters.add(d)
+            // Tier 3 (Levels 16 to 20): Grand Monoliths (46 to 76 dots -> 16 to 24 arrows)
+            3 -> {
+                val (shapeIdx, shapeScale) = when (sub) {
+                    0 -> 2 to ShapeScale.LARGE      // Kite Grand: 46 dots -> ~16 arrows
+                    1 -> 0 to ShapeScale.LARGE      // Heart Grand: 49 dots -> ~17-18 arrows
+                    2 -> 1 to ShapeScale.LARGE      // Diamond Grand: 60 dots -> ~19-20 arrows
+                    3 -> 7 to ShapeScale.LARGE      // Crown Grand: 66 dots -> ~20-21 arrows
+                    else -> 4 to ShapeScale.LARGE   // Shield Grand: 76 dots -> ~22-24 arrows
                 }
+                val (sName, dots) = getShapeByIndex(shapeIdx, 2, 2, shapeScale)
+                val maxR = dots.maxOf { it.first } + 2
+                val maxC = dots.maxOf { it.second } + 2
+                return LevelSpec("Totem $lvlNum ($sName)", maxR, maxC, listOf(dots))
             }
-            val allDots = clusters.flatten()
-            val rows = (allDots.maxOf { it.first } + gap).coerceAtMost(100)
-            val cols = (allDots.maxOf { it.second } + gap).coerceAtMost(100)
-            val name = if (idx <= 15) "Cosmos $idx" else "Multiverse Sovereign ${idx - 15}"
-            return LevelSpec(name, rows, cols, clusters)
+
+            // Tier 4 (Levels 21 to 25): Twin Constellations (~65 to 85 dots -> 22 to 27 arrows)
+            4 -> {
+                return buildTwinLevel(lvlNum, sub, ShapeScale.MEDIUM, ShapeScale.MEDIUM)
+            }
+
+            // Tier 5 (Levels 26 to 30): Twin Medium & Large (~85 to 105 dots -> 27 to 33 arrows)
+            5 -> {
+                return buildTwinLevel(lvlNum, sub, ShapeScale.MEDIUM, ShapeScale.LARGE)
+            }
+
+            // Tier 6 (Levels 31 to 35): Twin Titans (~110 to 135 dots -> 34 to 40 arrows)
+            6 -> {
+                return buildTwinLevel(lvlNum, sub, ShapeScale.LARGE, ShapeScale.LARGE)
+            }
+
+            // Tier 7 (Levels 36 to 40): Triad Constellations (3 Shapes -> 40 to 46 arrows)
+            7 -> {
+                return buildTriadLevel(lvlNum, sub, ShapeScale.MEDIUM, ShapeScale.MEDIUM)
+            }
+
+            // Tier 8 (Levels 41 to 45): Triad Grands (3 Large Shapes -> 46 to 52 arrows)
+            8 -> {
+                return buildTriadLevel(lvlNum, sub, ShapeScale.MEDIUM, ShapeScale.LARGE)
+            }
+
+            // Tier 9 (Levels 46 to 50): Quad Constellation (4 Shapes in 2x2 grid -> 53 to 62 arrows)
+            9 -> {
+                return buildGridLevel(lvlNum, 2, 2, "Quad Constellation")
+            }
+
+            // Tier 10 to 14 (Levels 51 to 75): Growing Archipelagos (5, 6, 7, 8, 9 shapes)
+            in 10..14 -> {
+                val clusterCount = 5 + (tier5 - 10)
+                val gCols = if (clusterCount <= 6) 2 else 3
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Archipelago")
+            }
+
+            // Tier 15 to 19 (Levels 76 to 100): 10 to 14 Clusters
+            in 15..19 -> {
+                val clusterCount = 10 + (tier5 - 15)
+                val gCols = 3
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Galaxy")
+            }
+
+            // Tier 20 to 27 (Levels 101 to 140): 15 to 22 Clusters
+            in 20..27 -> {
+                val clusterCount = 15 + (tier5 - 20)
+                val gCols = 4
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Cosmic Sector")
+            }
+
+            // Tier 28 to 39 (Levels 141 to 200): 23 to 34 Clusters
+            else -> {
+                val clusterCount = (23 + (tier5 - 28)).coerceAtMost(36)
+                val gCols = 5
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Multiverse Sovereign")
+            }
         }
+    }
+
+    private fun buildTwinLevel(lvlNum: Int, sub: Int, sc1: ShapeScale, sc2: ShapeScale): LevelSpec {
+        val pool = listOf(0, 1, 2, 4, 6, 7, 9, 12) // Solid dot density: Heart, Diamond, Kite, Shield, Star, Crown, Vortex, Planet
+        val sIdx1 = pool[(lvlNum * 2) % pool.size]
+        val sIdx2 = pool[(lvlNum * 2 + 1) % pool.size]
+        val (sName1, dots1) = getShapeByIndex(sIdx1, 2, 2, sc1)
+        val (sName2, dots2) = if (sub % 2 == 1) {
+            val cOffset = dots1.maxOf { it.second } + 4
+            getShapeByIndex(sIdx2, 2, cOffset, sc2)
+        } else {
+            val rOffset = dots1.maxOf { it.first } + 4
+            getShapeByIndex(sIdx2, rOffset, 2, sc2)
+        }
+        val allDots = dots1 + dots2
+        val rows = allDots.maxOf { it.first } + 3
+        val cols = allDots.maxOf { it.second } + 3
+        return LevelSpec("Twin $sName1 & $sName2 ($lvlNum)", rows, cols, listOf(dots1, dots2))
+    }
+
+    private fun buildTriadLevel(lvlNum: Int, sub: Int, sc1: ShapeScale, sc2: ShapeScale): LevelSpec {
+        val pool = listOf(0, 1, 2, 4, 6, 7, 9, 12)
+        val sIdx1 = pool[(lvlNum * 3) % pool.size]
+        val sIdx2 = pool[(lvlNum * 3 + 1) % pool.size]
+        val sIdx3 = pool[(lvlNum * 3 + 2) % pool.size]
+        val scale = if (sub >= 3) sc2 else sc1
+        val (sName1, d1) = getShapeByIndex(sIdx1, 2, 10, scale)
+        val maxR1 = d1.maxOf { it.first }
+        val (sName2, d2) = getShapeByIndex(sIdx2, maxR1 + 4, 2, scale)
+        val maxC2 = d2.maxOf { it.second }
+        val (sName3, d3) = getShapeByIndex(sIdx3, maxR1 + 4, maxC2 + 4, scale)
+        val allDots = d1 + d2 + d3
+        val rows = allDots.maxOf { it.first } + 3
+        val cols = allDots.maxOf { it.second } + 3
+        return LevelSpec("Triad $sName1 Constellation ($lvlNum)", rows, cols, listOf(d1, d2, d3))
+    }
+
+    private fun buildGridLevel(lvlNum: Int, gridRows: Int, gridCols: Int, typeName: String): LevelSpec {
+        val gap = 3
+        val clusters = mutableListOf<List<Pair<Int, Int>>>()
+        val tier5 = (lvlNum - 1) / 5
+        val scale = if (tier5 >= 20) ShapeScale.SMALL else ShapeScale.MEDIUM
+        val pool = listOf(0, 1, 2, 4, 6, 7, 9, 12)
+
+        for (gr in 0 until gridRows) {
+            for (gc in 0 until gridCols) {
+                val shapeIdx = pool[(lvlNum + gr * gridCols + gc) % pool.size]
+                val r0 = 2 + gr * (12 + gap)
+                val c0 = 2 + gc * (12 + gap)
+                val (_, d) = getShapeByIndex(shapeIdx, r0, c0, scale)
+                clusters.add(d)
+            }
+        }
+        val allDots = clusters.flatten()
+        val rows = (allDots.maxOf { it.first } + 3).coerceAtMost(100)
+        val cols = (allDots.maxOf { it.second } + 3).coerceAtMost(100)
+        return LevelSpec("$typeName $lvlNum", rows, cols, clusters)
+    }
+
+    private fun buildFlexibleGridLevel(lvlNum: Int, clusterCount: Int, gridRows: Int, gridCols: Int, typeName: String): LevelSpec {
+        val gap = 3
+        val clusters = mutableListOf<List<Pair<Int, Int>>>()
+        val pool = listOf(0, 1, 2, 4, 6, 7, 9, 12)
+        val tier5 = (lvlNum - 1) / 5
+        val scale = if (tier5 >= 25) ShapeScale.SMALL else ShapeScale.MEDIUM
+        val dim = if (scale == ShapeScale.SMALL) 9 else 12
+
+        var added = 0
+        for (gr in 0 until gridRows) {
+            for (gc in 0 until gridCols) {
+                if (added >= clusterCount) break
+                val shapeIdx = pool[(lvlNum + added) % pool.size]
+                val r0 = 2 + gr * (dim + gap)
+                val c0 = 2 + gc * (dim + gap)
+                val (_, d) = getShapeByIndex(shapeIdx, r0, c0, scale)
+                clusters.add(d)
+                added++
+            }
+            if (added >= clusterCount) break
+        }
+        val allDots = clusters.flatten()
+        val rows = (allDots.maxOf { it.first } + 3).coerceAtMost(100)
+        val cols = (allDots.maxOf { it.second } + 3).coerceAtMost(100)
+        return LevelSpec("$typeName $lvlNum ($clusterCount Sectors)", rows, cols, clusters)
     }
 
     fun generateLevel(id: Int): DotGridLevel {
@@ -686,7 +752,7 @@ object DotGridLevelGenerator {
                 val otherClustersDots = allClustersDots - cluster.toSet()
                 for (cAtt in 0 until 35) {
                     val occupiedForCluster = (globalOccupied + otherClustersDots)
-                    val (success, cArrows) = packCluster(cluster, spec.rows, spec.cols, occupiedForCluster, rng, id)
+                    val (success, cArrows) = packCluster(cluster, spec.rows, spec.cols, occupiedForCluster, rng, id, allClustersDots.size)
                     if (success) {
                         clusterOk = true
                         for (a in cArrows) {
@@ -717,13 +783,32 @@ object DotGridLevelGenerator {
         return fallbackDenseLevel(id, spec)
     }
 
+    fun getTargetArrowCount(lvlNum: Int): Int {
+        val tier5 = (lvlNum - 1) / 5
+        val sub = (lvlNum - 1) % 5
+        return when (tier5) {
+            0 -> 3 + sub // Lv 1-5: 3, 4, 5, 6, 7 arrows
+            1 -> 8 + sub // Lv 6-10: 8, 9, 10, 11, 12 arrows
+            2 -> 13 + sub // Lv 11-15: 13, 14, 15, 16, 17 arrows
+            3 -> 18 + sub // Lv 16-20: 18, 19, 20, 21, 22 arrows
+            4 -> 23 + sub // Lv 21-25: 23, 24, 25, 26, 27 arrows
+            5 -> 28 + sub // Lv 26-30: 28, 29, 30, 31, 32 arrows
+            6 -> 33 + sub // Lv 31-35: 33, 34, 35, 36, 37 arrows
+            7 -> 38 + sub // Lv 36-40: 38, 39, 40, 41, 42 arrows
+            8 -> 43 + sub // Lv 41-45: 43, 44, 45, 46, 47 arrows
+            9 -> 48 + sub * 2 // Lv 46-50: 48, 50, 52, 54, 56 arrows
+            else -> 56 + (tier5 - 9) * 6 + sub * 2
+        }
+    }
+
     internal fun packCluster(
         cDots: List<Pair<Int, Int>>,
         boardRows: Int,
         boardCols: Int,
         globalOccupied: Set<Pair<Int, Int>>,
         rng: Random,
-        lvlNum: Int
+        lvlNum: Int,
+        boardTotalDots: Int = cDots.size
     ): Pair<Boolean, List<List<Pair<Int, Int>>>> {
         val unfilled = cDots.toMutableSet()
         val occupied = globalOccupied.toMutableSet()
@@ -740,16 +825,27 @@ object DotGridLevelGenerator {
             return true
         }
 
-        // Phase 1: Place reverse arrows inside cluster (scaling length & turns with level)
-        val (baseMinLen, baseMaxLen) = when {
-            lvlNum <= 20 -> 2 to 4
-            lvlNum <= 60 -> 3 to 5
-            lvlNum <= 120 -> 3 to 6
-            else -> 3 to 8
+        // Phase 1: Place reverse arrows inside cluster (scaling length & turns with 5-level tier)
+        val tier5 = (lvlNum - 1) / 5
+        val targetTotal = getTargetArrowCount(lvlNum)
+        val targetClusterArrows = (targetTotal.toDouble() * (cDots.size.toDouble() / boardTotalDots.coerceAtLeast(1))).coerceAtLeast(1.5)
+        val idealLen = (cDots.size / targetClusterArrows).coerceIn(2.0, 5.0)
+        val (minLen, maxLen) = when {
+            idealLen <= 2.6 -> 2 to 3
+            idealLen <= 3.3 -> 2 to 4
+            idealLen <= 3.9 -> 3 to 4
+            idealLen <= 4.6 -> 3 to 5
+            else -> 4 to 6
         }
-        val minLen = if (cDots.size <= 24) 2 else baseMinLen
-        val maxLen = if (cDots.size <= 24) 4 else baseMaxLen
-        val turnProbability = (lvlNum / 220.0).coerceIn(0.1, 0.75)
+        val turnProbability = when (tier5) {
+            0 -> 0.05 // Level 1-5: straight tutorial arrows, immediate clarity
+            1 -> 0.12 // Level 6-10: gentle single corners
+            2 -> 0.20 // Level 11-15: corners and L-bends
+            3 -> 0.28 // Level 16-20
+            4 -> 0.35 // Level 21-25
+            5 -> 0.42 // Level 26-30
+            else -> (0.45 + (tier5 - 6) * 0.012).coerceAtMost(0.75)
+        }
 
         for (step in 0 until 800) {
             if (unfilled.isEmpty()) break
