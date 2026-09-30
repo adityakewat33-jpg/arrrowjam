@@ -33,10 +33,6 @@ object AdMobManager {
     const val PROD_BANNER_AD_UNIT_ID = "ca-app-pub-3059174574936158/6139399833"
     const val PROD_REWARDED_AD_UNIT_ID = "ca-app-pub-3059174574936158/2200154824"
 
-    // Google Official Sample Test IDs (used as backup if new ad unit is in <1hr propagation window)
-    private const val TEST_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
-    private const val TEST_REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917"
-
     private var rewardedAd: RewardedAd? = null
     private var isLoadingRewarded = false
     private var isInitialized = false
@@ -66,7 +62,6 @@ object AdMobManager {
         isLoadingRewarded = true
         val adRequest = AdRequest.Builder().build()
 
-        // First attempt with developer's production unit ID
         RewardedAd.load(
             context,
             PROD_REWARDED_AD_UNIT_ID,
@@ -79,31 +74,9 @@ object AdMobManager {
                 }
 
                 override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    Log.w(TAG, "Prod Rewarded Ad failed to load (${loadAdError.code}: ${loadAdError.message}). Trying test unit while ad unit propagates...")
-                    // If newly created ad unit is in propagation window, load test unit so emulator/testing works
-                    loadFallbackRewardedAd(context)
-                }
-            }
-        )
-    }
-
-    private fun loadFallbackRewardedAd(context: Context) {
-        val adRequest = AdRequest.Builder().build()
-        RewardedAd.load(
-            context,
-            TEST_REWARDED_AD_UNIT_ID,
-            adRequest,
-            object : RewardedAdLoadCallback() {
-                override fun onAdLoaded(ad: RewardedAd) {
-                    rewardedAd = ad
-                    isLoadingRewarded = false
-                    Log.i(TAG, "AdMob Test Rewarded Ad loaded successfully!")
-                }
-
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                     rewardedAd = null
                     isLoadingRewarded = false
-                    Log.w(TAG, "Both prod and test Rewarded Ads failed to load: ${loadAdError.message}")
+                    Log.w(TAG, "Prod Rewarded Ad failed to load (${loadAdError.code}: ${loadAdError.message}).")
                 }
             }
         )
@@ -179,41 +152,14 @@ object AdMobManager {
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 super.onAdFailedToLoad(loadAdError)
-                Log.w(TAG, "AdMob Banner failed to load (${loadAdError.code}: ${loadAdError.message}). Trying test unit while new ad unit propagates...")
-                // If newly created ad unit is still propagating (can take up to 1 hr per Google), load sample test ad
-                loadFallbackBanner(adView, fallbackView)
+                Log.w(TAG, "AdMob Banner failed to load (${loadAdError.code}: ${loadAdError.message}).")
+                adView.visibility = View.GONE
+                fallbackView?.visibility = View.VISIBLE
             }
         }
 
         container.addView(adView)
         adView.loadAd(AdRequest.Builder().build())
         return adView
-    }
-
-    private fun loadFallbackBanner(adView: AdView, fallbackView: View?) {
-        try {
-            val fallbackAdView = AdView(adView.context).apply {
-                setAdSize(AdSize.BANNER)
-                adUnitId = TEST_BANNER_AD_UNIT_ID
-                layoutParams = adView.layoutParams
-            }
-            val parent = adView.parent as? ViewGroup
-            fallbackAdView.adListener = object : AdListener() {
-                override fun onAdLoaded() {
-                    Log.i(TAG, "AdMob Test Banner loaded successfully!")
-                    fallbackView?.visibility = View.GONE
-                    fallbackAdView.visibility = View.VISIBLE
-                }
-
-                override fun onAdFailedToLoad(error: LoadAdError) {
-                    Log.w(TAG, "Fallback banner failed to load: ${error.message}")
-                    fallbackView?.visibility = View.VISIBLE
-                }
-            }
-            parent?.addView(fallbackAdView)
-            fallbackAdView.loadAd(AdRequest.Builder().build())
-        } catch (e: Throwable) {
-            Log.e(TAG, "Error in loadFallbackBanner", e)
-        }
     }
 }
