@@ -28,4 +28,35 @@ class ExampleUnitTest {
             prevAvg = avg
         }
     }
+
+    @Test
+    fun exportAllLevelsToJson() {
+        val sb = StringBuilder()
+        sb.append("{\n  \"version\": 3,\n  \"levels\": [\n")
+        for (i in 1..200) {
+            val level = com.example.arrowescape.logic.DotGridLevelGenerator.generateLevel(i)
+            sb.append("    {\n")
+            sb.append("      \"id\": ${level.id},\n")
+            sb.append("      \"name\": \"${level.name.replace("\"", "\\\"")}\",\n")
+            sb.append("      \"rows\": ${level.rows},\n")
+            sb.append("      \"cols\": ${level.cols},\n")
+            sb.append("      \"arrows\": [\n")
+            for ((aIdx, arrow) in level.arrows.withIndex()) {
+                val hex = String.format("#%06X", 0xFFFFFF and arrow.color)
+                val dotsStr = arrow.dots.joinToString(", ") { "[${it.first}, ${it.second}]" }
+                sb.append("        { \"dots\": [$dotsStr], \"color\": \"$hex\" }")
+                if (aIdx < level.arrows.size - 1) sb.append(",")
+                sb.append("\n")
+            }
+            sb.append("      ]\n")
+            sb.append("    }")
+            if (i < 200) sb.append(",")
+            sb.append("\n")
+        }
+        sb.append("  ]\n}\n")
+        val file = java.io.File("levels.json")
+        file.writeText(sb.toString())
+        println("Exported 200 levels to ${file.absolutePath} (${file.length()} bytes)")
+        assertTrue(file.exists() && file.length() > 1000)
+    }
 }

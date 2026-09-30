@@ -850,6 +850,7 @@ object DotGridLevelGenerator {
         for (step in 0 until 800) {
             if (unfilled.isEmpty()) break
             val candidates = unfilled.shuffled(rng)
+            var placedInStep = false
             for (head in candidates) {
                 val (headR, headC) = head
                 val validDirs = cardinals.filter { (dr, dc) -> isExitClear(headR, headC, dr, dc) }.shuffled(rng)
@@ -920,10 +921,12 @@ object DotGridLevelGenerator {
                     }
                     clusterArrows.add(tailToHead)
                     placed = true
+                    placedInStep = true
                     break
                 }
                 if (placed) break
             }
+            if (!placedInStep) break
         }
 
         // Phase 2: Absorb remaining dots into adjacent heads and tails

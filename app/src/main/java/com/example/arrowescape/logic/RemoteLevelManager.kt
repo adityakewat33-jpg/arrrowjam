@@ -38,6 +38,8 @@ object RemoteLevelManager {
     private val mainHandler = Handler(Looper.getMainLooper())
     private var isSyncing = false
 
+    private var isNetworkCallbackRegistered = false
+
     /**
      * Listener callback invoked on Main Thread when new levels are detected and synced.
      * parameters: (totalLevelsNow: Int, newLevelsAdded: Int)
@@ -48,10 +50,32 @@ object RemoteLevelManager {
      * Initialize manager:
      * 1. Loads any previously cached remote levels immediately into repository (instant, offline-ready).
      * 2. Checks internet and triggers background sync.
+     * 3. Registers real-time NetworkCallback to auto-sync the moment user turns on internet.
      */
     fun init(context: Context) {
-        loadCachedLevels(context)
-        syncIfConnected(context)
+        val appContext = context.applicationContext
+        loadCachedLevels(appContext)
+        syncIfConnected(appContext)
+        registerNetworkCallback(appContext)
+    }
+
+    private fun registerNetworkCallback(context: Context) {
+        if (isNetworkCallbackRegistered) return
+        try {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
+            val request = android.net.NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build()
+            cm.registerNetworkCallback(request, object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: android.net.Network) {
+                    Log.d(TAG, "Network available: triggering auto level sync...")
+                    syncIfConnected(context)
+                }
+            })
+            isNetworkCallbackRegistered = true
+        } catch (e: Throwable) {
+            Log.w(TAG, "Unable to register network callback: ${e.message}")
+        }
     }
 
     /**
@@ -122,14 +146,17 @@ object RemoteLevelManager {
     fun fetchAndApplyRemoteLevels(context: Context, endpointUrl: String): Boolean {
         var connection: HttpURLConnection? = null
         try {
-            Log.d(TAG, "Fetching remote levels from: $endpointUrl")
-            val url = URL(endpointUrl)
+            val fullUrl = if (endpointUrl.contains("?")) "$endpointUrl&_cb=${System.currentTimeMillis()}" else "$endpointUrl?_cb=${System.currentTimeMillis()}"
+            Log.d(TAG, "Fetching remote levels from: $fullUrl")
+            val url = URL(fullUrl)
             connection = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
-                connectTimeout = 5000
-                readTimeout = 6000
+                connectTimeout = 6000
+                readTimeout = 8000
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("User-Agent", "ArrowJam-Android")
+                setRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate")
+                setRequestProperty("Pragma", "no-cache")
             }
 
             val responseCode = connection.responseCode
@@ -184,10 +211,8 @@ object RemoteLevelManager {
 
         Log.i(TAG, "Successfully synced ${parsedLevels.size} levels. New total: $newTotal (New added: $newLevelsCount)")
 
-        if (newLevelsCount > 0 || newTotal > previousTotal) {
-            mainHandler.post {
-                onLevelsUpdated?.invoke(newTotal, newLevelsCount)
-            }
+        mainHandler.post {
+            onLevelsUpdated?.invoke(newTotal, newLevelsCount)
         }
         return true
     }
