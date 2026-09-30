@@ -1,10 +1,12 @@
 package com.example.arrowescape
 
 import android.app.Dialog
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -98,7 +100,8 @@ class MainActivity : AppCompatActivity() {
                     binding.viewGame.visibility == View.VISIBLE ||
                     binding.viewShop.visibility == View.VISIBLE ||
                     binding.viewThemes.visibility == View.VISIBLE ||
-                    binding.viewAchievements.visibility == View.VISIBLE) {
+                    binding.viewAchievements.visibility == View.VISIBLE ||
+                    binding.viewMoreApps.visibility == View.VISIBLE) {
                     showHomeScreen()
                 } else {
                     isEnabled = false
@@ -143,6 +146,37 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnHomeAchievements.setOnClickListener {
             showAchievementsScreen()
+        }
+
+        binding.btnHomeMoreApps.setOnClickListener {
+            showMoreAppsScreen()
+        }
+
+        binding.btnBackFromMoreApps.setOnClickListener {
+            showHomeScreen()
+        }
+
+        binding.btnVisitAppSphere.setOnClickListener {
+            openUrl("https://adityakewat33-jpg.github.io/AppSphere/")
+        }
+
+        binding.btnOpenAppSphereStore.setOnClickListener {
+            openUrl("https://adityakewat33-jpg.github.io/AppSphere/")
+        }
+
+        binding.btnInstallFlapMaster.setOnClickListener {
+            Toast.makeText(this, "Opening FlapMaster Arcade APK download...", Toast.LENGTH_SHORT).show()
+            openUrl("https://github.com/adityakewat33-jpg/AppSphere/raw/main/uploads/apks/flapmaster.apk")
+        }
+
+        binding.btnInstallStatusSaver.setOnClickListener {
+            Toast.makeText(this, "Opening Status Saver APK download...", Toast.LENGTH_SHORT).show()
+            openUrl("https://github.com/adityakewat33-jpg/AppSphere/raw/main/uploads/apks/statussaver.apk")
+        }
+
+        binding.btnInstallBlastGrid.setOnClickListener {
+            Toast.makeText(this, "Opening BlastGrid APK download...", Toast.LENGTH_SHORT).show()
+            openUrl("https://github.com/adityakewat33-jpg/AppSphere/raw/main/uploads/apks/blastgrid.apk")
         }
 
         binding.btnHeaderCoins.setOnClickListener {
@@ -368,6 +402,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewShop.visibility = View.GONE
         binding.viewThemes.visibility = View.GONE
         binding.viewAchievements.visibility = View.GONE
+        binding.viewMoreApps.visibility = View.GONE
         binding.viewHome.visibility = View.VISIBLE
         updateHomeScreenUI()
     }
@@ -378,6 +413,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewShop.visibility = View.GONE
         binding.viewThemes.visibility = View.GONE
         binding.viewAchievements.visibility = View.GONE
+        binding.viewMoreApps.visibility = View.GONE
         binding.viewLevels.visibility = View.VISIBLE
         updateLevelsScreenUI()
     }
@@ -388,6 +424,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewShop.visibility = View.GONE
         binding.viewThemes.visibility = View.GONE
         binding.viewAchievements.visibility = View.GONE
+        binding.viewMoreApps.visibility = View.GONE
         binding.viewGame.visibility = View.VISIBLE
         updateCoinDisplays()
         updateLivesUI()
@@ -400,6 +437,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewGame.visibility = View.GONE
         binding.viewThemes.visibility = View.GONE
         binding.viewAchievements.visibility = View.GONE
+        binding.viewMoreApps.visibility = View.GONE
         binding.viewShop.visibility = View.VISIBLE
         updateCoinDisplays()
     }
@@ -410,6 +448,7 @@ class MainActivity : AppCompatActivity() {
         binding.viewGame.visibility = View.GONE
         binding.viewShop.visibility = View.GONE
         binding.viewAchievements.visibility = View.GONE
+        binding.viewMoreApps.visibility = View.GONE
         binding.viewThemes.visibility = View.VISIBLE
         updateCoinDisplays()
         populateThemesScreen()
@@ -421,9 +460,30 @@ class MainActivity : AppCompatActivity() {
         binding.viewGame.visibility = View.GONE
         binding.viewShop.visibility = View.GONE
         binding.viewThemes.visibility = View.GONE
+        binding.viewMoreApps.visibility = View.GONE
         binding.viewAchievements.visibility = View.VISIBLE
         updateCoinDisplays()
         populateAchievementsScreen()
+    }
+
+    private fun showMoreAppsScreen() {
+        binding.viewHome.visibility = View.GONE
+        binding.viewLevels.visibility = View.GONE
+        binding.viewGame.visibility = View.GONE
+        binding.viewShop.visibility = View.GONE
+        binding.viewThemes.visibility = View.GONE
+        binding.viewAchievements.visibility = View.GONE
+        binding.viewMoreApps.visibility = View.VISIBLE
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        } catch (e: Throwable) {
+            Toast.makeText(this, "Could not open link: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // --- UI Update Helpers ---
