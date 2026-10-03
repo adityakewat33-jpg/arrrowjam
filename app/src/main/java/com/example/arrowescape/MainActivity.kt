@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize Google Mobile Ads SDK (Banner & Rewarded)
         AdMobManager.init(this)
-        AdMobManager.loadBannerAd(binding.flHomeBannerContainer, binding.layoutHomeBannerAd, this)
+        AdMobManager.loadBannerAd(binding.flHomeBannerContainer, null, this)
         AdMobManager.loadBannerAd(binding.flGameBannerContainer, null, this)
 
         // Initialize Level Repository and Game Manager (Coin/Theme/Achievement/Hint data)
@@ -212,13 +212,6 @@ class MainActivity : AppCompatActivity() {
         binding.btnLevelsCoinPill.setOnClickListener {
             showShopScreen()
         }
-
-        // --- Banner Ad Click on Home Page ---
-        val onBannerClick = View.OnClickListener {
-            Toast.makeText(this, "🎮 Sponsored: Thank you for playing Arrow Jam!", Toast.LENGTH_SHORT).show()
-        }
-        binding.layoutHomeBannerAd.setOnClickListener(onBannerClick)
-        binding.btnBannerInstall.setOnClickListener(onBannerClick)
 
         // --- Game Board Callbacks ---
         binding.gameBoardView.onMoveMade = { moves ->
