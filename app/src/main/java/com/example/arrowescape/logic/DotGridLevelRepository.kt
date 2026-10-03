@@ -177,8 +177,8 @@ object GameManager {
         if (isFirstTime) {
             set.add(levelId.toString())
             prefs.edit().putStringSet(KEY_COMPLETED_LEVELS, set).apply()
-            // Fixed 50 coins per level completion
-            addCoins(50)
+            // Fixed 25 coins per level completion
+            addCoins(25)
         }
         return isFirstTime
     }

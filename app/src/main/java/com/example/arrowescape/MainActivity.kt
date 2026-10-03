@@ -833,10 +833,10 @@ class MainActivity : AppCompatActivity() {
         val moves = binding.gameBoardView.moveCount
         tvStats.text = "Cleared in $moves moves!"
 
-        val rewardAmount = 50
+        val rewardAmount = 25
         tvCoinsEarned.text = "+$rewardAmount Coins!"
         if (!isFirstTime) {
-            GameManager.addCoins(50)
+            GameManager.addCoins(25)
         }
 
         updateCoinDisplays()
