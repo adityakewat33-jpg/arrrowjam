@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnBuyHintPack1.setOnClickListener {
-            if (GameManager.buyHints(3, 50)) {
+            if (GameManager.buyHints(3, 100)) {
                 updateCoinDisplays()
                 updateHintUI()
                 Toast.makeText(this, "💡 Purchased 3 Hints!", Toast.LENGTH_SHORT).show()
@@ -302,7 +302,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnBuyHintPack2.setOnClickListener {
-            if (GameManager.buyHints(10, 140)) {
+            if (GameManager.buyHints(10, 300)) {
                 updateCoinDisplays()
                 updateHintUI()
                 Toast.makeText(this, "✨ Purchased 10 Hints Bundle!", Toast.LENGTH_SHORT).show()
@@ -312,7 +312,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnBuyHintPack3.setOnClickListener {
-            if (GameManager.buyHints(25, 300)) {
+            if (GameManager.buyHints(25, 700)) {
                 updateCoinDisplays()
                 updateHintUI()
                 Toast.makeText(this, "👑 Purchased 25 Hints Master Bundle!", Toast.LENGTH_SHORT).show()
@@ -322,7 +322,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnBuyHintPack4.setOnClickListener {
-            if (GameManager.buyHints(50, 550)) {
+            if (GameManager.buyHints(50, 1300)) {
                 updateCoinDisplays()
                 updateHintUI()
                 Toast.makeText(this, "⚡ Purchased 50 Hints Mega Bundle!", Toast.LENGTH_SHORT).show()

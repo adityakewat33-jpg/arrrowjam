@@ -10,11 +10,11 @@ import org.json.JSONArray
 object DotGridLevelRepository {
 
     private val levelCache = java.util.concurrent.ConcurrentHashMap<Int, DotGridLevel>()
-    var totalLevels: Int = 200
+    var totalLevels: Int = 700
         private set
 
     fun init(context: Context) {
-        // 1. Immediately populate metadata for all 200 levels (instant ~0.1ms)
+        // 1. Immediately populate metadata for all 700 levels (instant ~0.2ms)
         for (i in 1..totalLevels) {
             val spec = DotGridLevelGenerator.getLevelSpec(i)
             levelCache[i] = DotGridLevel(i, spec.name, spec.rows, spec.cols, emptyList())

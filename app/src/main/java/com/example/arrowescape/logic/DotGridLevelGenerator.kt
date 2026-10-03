@@ -635,11 +635,51 @@ object DotGridLevelGenerator {
             }
 
             // Tier 28 to 39 (Levels 141 to 200): 23 to 34 Clusters
-            else -> {
+            in 28..39 -> {
                 val clusterCount = (23 + (tier5 - 28)).coerceAtMost(36)
                 val gCols = 5
                 val gRows = (clusterCount + gCols - 1) / gCols
                 return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Multiverse Sovereign")
+            }
+
+            // Tier 40 to 59 (Levels 201 to 300): 35 to 44 Clusters
+            in 40..59 -> {
+                val clusterCount = 35 + ((tier5 - 40) / 2).coerceAtMost(9)
+                val gCols = 6
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Nebula Nexus")
+            }
+
+            // Tier 60 to 79 (Levels 301 to 400): 45 to 52 Clusters
+            in 60..79 -> {
+                val clusterCount = 45 + ((tier5 - 60) / 3).coerceAtMost(7)
+                val gCols = 6
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Quantum Labyrinth")
+            }
+
+            // Tier 80 to 99 (Levels 401 to 500): 52 to 58 Clusters
+            in 80..99 -> {
+                val clusterCount = 52 + ((tier5 - 80) / 3).coerceAtMost(6)
+                val gCols = 7
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Infinity Apex")
+            }
+
+            // Tier 100 to 119 (Levels 501 to 600): 58 to 64 Clusters
+            in 100..119 -> {
+                val clusterCount = 58 + ((tier5 - 100) / 3).coerceAtMost(6)
+                val gCols = 7
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Singularity Horizon")
+            }
+
+            // Tier 120 to 139 (Levels 601 to 700): 64 to 70 Clusters
+            else -> {
+                val clusterCount = (64 + ((tier5 - 120) / 3)).coerceAtMost(70)
+                val gCols = 7
+                val gRows = (clusterCount + gCols - 1) / gCols
+                return buildFlexibleGridLevel(lvlNum, clusterCount, gRows, gCols, "Eternal Sovereign")
             }
         }
     }
@@ -723,8 +763,8 @@ object DotGridLevelGenerator {
             if (added >= clusterCount) break
         }
         val allDots = clusters.flatten()
-        val rows = (allDots.maxOf { it.first } + 3).coerceAtMost(100)
-        val cols = (allDots.maxOf { it.second } + 3).coerceAtMost(100)
+        val rows = (allDots.maxOf { it.first } + 3).coerceAtMost(160)
+        val cols = (allDots.maxOf { it.second } + 3).coerceAtMost(160)
         return LevelSpec("$typeName $lvlNum ($clusterCount Sectors)", rows, cols, clusters)
     }
 
@@ -797,7 +837,7 @@ object DotGridLevelGenerator {
             7 -> 38 + sub // Lv 36-40: 38, 39, 40, 41, 42 arrows
             8 -> 43 + sub // Lv 41-45: 43, 44, 45, 46, 47 arrows
             9 -> 48 + sub * 2 // Lv 46-50: 48, 50, 52, 54, 56 arrows
-            else -> 56 + (tier5 - 9) * 6 + sub * 2
+            else -> (56 + (tier5 - 9) * 4 + sub * 2).coerceAtMost(350)
         }
     }
 

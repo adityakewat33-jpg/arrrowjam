@@ -161,7 +161,7 @@
                         android:id="@+id/tvHomeProgressPill"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="⭐ 0 / 200 Cleared"
+                        android:text="⭐ 0 / 700 Cleared"
                         android:textColor="@color/accent_emerald"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -260,7 +260,7 @@
                         android:layout_marginStart="14dp"
                         android:layout_weight="1"
                         android:letterSpacing="0.03"
-                        android:text="All Levels (1 - 200)"
+                        android:text="All Levels (1 - 700)"
                         android:textColor="@color/accent_emerald"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -556,7 +556,7 @@
                     android:id="@+id/tvLevelsPageProgress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 / 200 Cleared"
+                    android:text="0 / 700 Cleared"
                     android:textColor="@color/accent_emerald"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -850,7 +850,7 @@
                             android:id="@+id/tvShopVaultCleared"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="10 / 200"
+                            android:text="0 / 700"
                             android:textColor="@color/accent_emerald"
                             android:textSize="17sp"
                             android:textStyle="bold" />
@@ -1051,7 +1051,7 @@
                         android:background="@drawable/bg_button"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="50 🪙"
+                        android:text="100 🪙"
                         android:textColor="@color/coin_gold"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -1111,7 +1111,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Save 10 coins with bundle"
+                            android:text="Save 30 coins with bundle"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -1123,7 +1123,7 @@
                         android:background="@drawable/bg_button"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="140 🪙"
+                        android:text="300 🪙"
                         android:textColor="@color/coin_gold"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -1183,7 +1183,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Save 120 coins • Unstoppable puzzle solver"
+                            android:text="Save 130 coins • Unstoppable puzzle solver"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -1195,7 +1195,7 @@
                         android:background="@drawable/bg_btn_primary"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="300 🪙"
+                        android:text="700 🪙"
                         android:textColor="@color/white"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -1255,7 +1255,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Save 280 coins • Master all 200 levels"
+                            android:text="Save 360 coins • Master all 700 levels"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -1267,7 +1267,7 @@
                         android:background="@drawable/bg_button"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="550 🪙"
+                        android:text="1300 🪙"
                         android:textColor="@color/coin_gold"
                         android:textSize="13sp"
                         android:textStyle="bold" />

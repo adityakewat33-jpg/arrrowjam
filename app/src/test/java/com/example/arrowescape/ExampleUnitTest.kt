@@ -32,8 +32,8 @@ class ExampleUnitTest {
     @Test
     fun exportAllLevelsToJson() {
         val sb = StringBuilder()
-        sb.append("{\n  \"version\": 3,\n  \"levels\": [\n")
-        for (i in 1..200) {
+        sb.append("{\n  \"version\": 4,\n  \"levels\": [\n")
+        for (i in 1..700) {
             val level = com.example.arrowescape.logic.DotGridLevelGenerator.generateLevel(i)
             sb.append("    {\n")
             sb.append("      \"id\": ${level.id},\n")
@@ -50,13 +50,16 @@ class ExampleUnitTest {
             }
             sb.append("      ]\n")
             sb.append("    }")
-            if (i < 200) sb.append(",")
+            if (i < 700) sb.append(",")
             sb.append("\n")
+            if (i % 50 == 0) {
+                println("Generated $i / 700 levels...")
+            }
         }
         sb.append("  ]\n}\n")
         val file = java.io.File("levels.json")
         file.writeText(sb.toString())
-        println("Exported 200 levels to ${file.absolutePath} (${file.length()} bytes)")
-        assertTrue(file.exists() && file.length() > 1000)
+        println("Exported 700 levels to ${file.absolutePath} (${file.length()} bytes)")
+        assertTrue(file.exists() && file.length() > 5000)
     }
 }

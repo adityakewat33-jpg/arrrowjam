@@ -16,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="All Levels (1 - 200)"
+            android:text="All Levels (1 - 700)"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -30,7 +30,7 @@
             android:paddingTop="4dp"
             android:paddingEnd="10dp"
             android:paddingBottom="4dp"
-            android:text="0 / 200 Cleared"
+            android:text="0 / 700 Cleared"
             android:textColor="@color/accent_emerald"
             android:textSize="12sp"
             android:textStyle="bold" />

@@ -233,6 +233,11 @@ data class Achievement(
             "level_180" -> Pair(completedCount.coerceAtMost(180), 180)
             "level_190" -> Pair(completedCount.coerceAtMost(190), 190)
             "cosmic_sovereign" -> Pair(completedCount.coerceAtMost(200), 200)
+            "level_300" -> Pair(completedCount.coerceAtMost(300), 300)
+            "level_400" -> Pair(completedCount.coerceAtMost(400), 400)
+            "level_500" -> Pair(completedCount.coerceAtMost(500), 500)
+            "level_600" -> Pair(completedCount.coerceAtMost(600), 600)
+            "eternal_sovereign_700" -> Pair(completedCount.coerceAtMost(700), 700)
 
             // Lifetime Coins Milestones (8)
             "coin_100" -> Pair(lifetimeCoins.coerceAtMost(100), 100)
@@ -286,7 +291,12 @@ data class Achievement(
             Achievement("level_170", "Void Wanderer", "Complete 170 levels", 1700, "🛰️") { c, _, _ -> c >= 170 },
             Achievement("level_180", "Supernova Mind", "Complete 180 levels", 1800, "💥") { c, _, _ -> c >= 180 },
             Achievement("level_190", "Zenith Solver", "Complete 190 levels", 2000, "🦅") { c, _, _ -> c >= 190 },
-            Achievement("cosmic_sovereign", "Cosmic Sovereign", "Complete all 200 levels", 2500, "🌌") { c, _, _ -> c >= 200 },
+            Achievement("cosmic_sovereign", "Cosmic Sovereign", "Complete 200 levels", 2500, "🌌") { c, _, _ -> c >= 200 },
+            Achievement("level_300", "Nebula Commander", "Complete 300 levels", 3000, "🪐") { c, _, _ -> c >= 300 },
+            Achievement("level_400", "Quantum Luminary", "Complete 400 levels", 4000, "⚛️") { c, _, _ -> c >= 400 },
+            Achievement("level_500", "Infinity Conqueror", "Complete 500 levels", 5000, "♾️") { c, _, _ -> c >= 500 },
+            Achievement("level_600", "Singularity Overlord", "Complete 600 levels", 6000, "🌀") { c, _, _ -> c >= 600 },
+            Achievement("eternal_sovereign_700", "Eternal Sovereign", "Complete all 700 levels", 8000, "👑") { c, _, _ -> c >= 700 },
 
             // --- Lifetime Coins Milestones (8) ---
             Achievement("coin_100", "Pocket Change", "Earn 100 lifetime coins", 50, "🪙") { _, tc, _ -> tc >= 100 },
