@@ -1,7 +1,7 @@
 {
-  "versionCode": 4,
-  "versionName": "1.0.4",
+  "versionCode": 5,
+  "versionName": "1.0.5",
   "apkUrl": "https://raw.githubusercontent.com/adityakewat33-jpg/arrrowjam/main/arrowjam.apk",
-  "releaseNotes": "• 25 coins rewarded per level completion\n• In-app auto-updater & 700 levels",
+  "releaseNotes": "• Persistent in-app update banner & dialog\n• 25 coins rewarded per level completion\n• 700 progressive levels & auto-updater",
   "forceUpdate": false
 }

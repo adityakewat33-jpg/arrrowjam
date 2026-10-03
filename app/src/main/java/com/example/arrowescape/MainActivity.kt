@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize Over-The-Air (OTA) App In-App Auto-Updater
         AppUpdateManager.init(this)
         AppUpdateManager.onUpdateAvailable = { updateInfo ->
+            updateHomeScreenUI()
             showAppUpdateDialog(updateInfo)
         }
 
@@ -123,6 +124,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         RemoteLevelManager.syncIfConnected(this)
+        AppUpdateManager.checkForUpdateIfConnected(this)
+        updateHomeScreenUI()
     }
 
     private fun applyCurrentTheme() {
@@ -498,6 +501,19 @@ class MainActivity : AppCompatActivity() {
         val totalCount = DotGridLevelRepository.totalLevels
         binding.tvHomeProgressPill.text = "⭐ $completedCount / $totalCount Cleared"
         binding.tvHomeAllLevelsLabel.text = "All Levels (1 - $totalCount)"
+
+        val updateInfo = AppUpdateManager.latestUpdateInfo
+        val currentCode = AppUpdateManager.getCurrentVersionCode(this)
+        if (updateInfo != null && updateInfo.versionCode > currentCode) {
+            binding.btnHomeUpdateBanner.visibility = View.VISIBLE
+            binding.tvHomeUpdateBannerTitle.text = "Update Available: v${updateInfo.versionName}"
+            binding.tvHomeUpdateBannerSubtitle.text = "Build ${updateInfo.versionCode} • Tap to install"
+            binding.btnHomeUpdateBanner.setOnClickListener {
+                showAppUpdateDialog(updateInfo)
+            }
+        } else {
+            binding.btnHomeUpdateBanner.visibility = View.GONE
+        }
     }
 
     private fun updateSoundUI() {
@@ -1187,6 +1203,7 @@ class MainActivity : AppCompatActivity() {
             .create()
 
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
 
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvUpdateDialogTitle)
         val tvVersion = dialogView.findViewById<TextView>(R.id.tvUpdateDialogVersion)
@@ -1205,6 +1222,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             btnLater.setOnClickListener {
                 dialog.dismiss()
+                updateHomeScreenUI()
             }
         }
 

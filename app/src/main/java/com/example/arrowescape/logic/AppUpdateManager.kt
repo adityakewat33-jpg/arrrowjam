@@ -125,15 +125,6 @@ object AppUpdateManager {
         if (!isInternetAvailable(context)) return
         if (isChecking) return
 
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val lastCheck = prefs.getLong(KEY_LAST_CHECK_TIME, 0L)
-        val now = System.currentTimeMillis()
-
-        // Rate limit automatic background checks to once every 15 minutes unless forced
-        if (!force && (now - lastCheck < 15 * 60 * 1000L)) {
-            return
-        }
-
         isChecking = true
         Thread {
             try {
@@ -159,14 +150,14 @@ object AppUpdateManager {
                     val currentCode = getCurrentVersionCode(context)
                     Log.d(TAG, "Update check: installed=$currentCode, remote=$remoteVersionCode")
 
-                    prefs.edit().putLong(KEY_LAST_CHECK_TIME, now).apply()
-
                     if (remoteVersionCode > currentCode) {
                         val info = AppUpdateInfo(remoteVersionCode, remoteVersionName, apkUrl, notes, forceUpdate)
                         latestUpdateInfo = info
                         mainHandler.post {
                             onUpdateAvailable?.invoke(info)
                         }
+                    } else {
+                        latestUpdateInfo = null
                     }
                 }
             } catch (e: Throwable) {
