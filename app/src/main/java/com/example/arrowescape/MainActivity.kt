@@ -26,6 +26,9 @@ import com.example.arrowescape.databinding.ActivityMainBinding
 import com.example.arrowescape.logic.DotGridLevelRepository
 import com.example.arrowescape.logic.GameManager
 import com.example.arrowescape.logic.RemoteLevelManager
+import com.example.arrowescape.logic.AppUpdateManager
+import com.example.arrowescape.logic.AppUpdateInfo
+import androidx.appcompat.app.AlertDialog
 import com.example.arrowescape.model.Achievement
 import com.example.arrowescape.model.DotGridLevel
 import com.example.arrowescape.model.GameTheme
@@ -82,6 +85,12 @@ class MainActivity : AppCompatActivity() {
             if (newAdded > 0) {
                 Toast.makeText(this, "🎉 $newAdded new levels added!", Toast.LENGTH_LONG).show()
             }
+        }
+
+        // Initialize Over-The-Air (OTA) App In-App Auto-Updater
+        AppUpdateManager.init(this)
+        AppUpdateManager.onUpdateAvailable = { updateInfo ->
+            showAppUpdateDialog(updateInfo)
         }
 
         prefs = getSharedPreferences("arrow_escape_prefs", MODE_PRIVATE)
@@ -1170,6 +1179,68 @@ class MainActivity : AppCompatActivity() {
             item.addView(statusPill)
             binding.layoutAchievementsList.addView(item)
         }
+    }
+
+    private fun showAppUpdateDialog(updateInfo: AppUpdateInfo) {
+        if (isFinishing || isDestroyed) return
+        val dialogView = layoutInflater.inflate(R.layout.dialog_app_update, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(!updateInfo.isForceUpdate)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tvUpdateDialogTitle)
+        val tvVersion = dialogView.findViewById<TextView>(R.id.tvUpdateDialogVersion)
+        val tvNotes = dialogView.findViewById<TextView>(R.id.tvUpdateReleaseNotes)
+        val layoutProgress = dialogView.findViewById<View>(R.id.layoutUpdateProgress)
+        val pbDownload = dialogView.findViewById<ProgressBar>(R.id.pbUpdateDownload)
+        val tvStatus = dialogView.findViewById<TextView>(R.id.tvUpdateProgressStatus)
+        val btnLater = dialogView.findViewById<Button>(R.id.btnUpdateLater)
+        val btnUpdateNow = dialogView.findViewById<Button>(R.id.btnUpdateNow)
+
+        tvVersion.text = "Arrow Jam v${updateInfo.versionName} (Build ${updateInfo.versionCode})"
+        tvNotes.text = updateInfo.releaseNotes
+
+        if (updateInfo.isForceUpdate) {
+            btnLater.visibility = View.GONE
+        } else {
+            btnLater.setOnClickListener {
+                dialog.dismiss()
+            }
+        }
+
+        btnUpdateNow.setOnClickListener {
+            btnUpdateNow.isEnabled = false
+            btnUpdateNow.text = "DOWNLOADING..."
+            btnLater.isEnabled = false
+            layoutProgress.visibility = View.VISIBLE
+            pbDownload.progress = 0
+            tvStatus.text = "Connecting to server..."
+
+            AppUpdateManager.startDownloadAndInstall(
+                activity = this,
+                updateInfo = updateInfo,
+                onProgress = { percent ->
+                    pbDownload.progress = percent
+                    tvStatus.text = if (percent >= 100) {
+                        "Download complete! Opening installer..."
+                    } else {
+                        "Downloading update: $percent%..."
+                    }
+                },
+                onError = { errorMsg ->
+                    btnUpdateNow.isEnabled = true
+                    btnUpdateNow.text = "RETRY"
+                    btnLater.isEnabled = true
+                    tvStatus.text = "⚠️ $errorMsg"
+                    Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+                }
+            )
+        }
+
+        dialog.show()
     }
 
     override fun onDestroy() {
