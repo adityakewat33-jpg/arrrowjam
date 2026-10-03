@@ -234,8 +234,6 @@ class MainActivity : AppCompatActivity() {
         binding.gameBoardView.onLevelCompleted = {
             val levelId = currentLevelIndex + 1
             val isFirstTime = GameManager.markLevelCompleted(levelId)
-            GameManager.checkAndUnlockAchievements()
-            // Intrusive coin notification toast removed per user request!
             showVictoryDialog(levelId, isFirstTime)
             updateHomeScreenUI()
         }
@@ -835,11 +833,10 @@ class MainActivity : AppCompatActivity() {
         val moves = binding.gameBoardView.moveCount
         tvStats.text = "Cleared in $moves moves!"
 
-        val level = DotGridLevelRepository.getLevel(levelId)
-        val rewardAmount = if (isFirstTime) (20 + (level.arrows.size / 5) * 5).coerceIn(20, 100) else 5
+        val rewardAmount = 50
         tvCoinsEarned.text = "+$rewardAmount Coins!"
         if (!isFirstTime) {
-            GameManager.addCoins(5)
+            GameManager.addCoins(50)
         }
 
         updateCoinDisplays()

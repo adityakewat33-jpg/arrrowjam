@@ -1,7 +1,7 @@
 {
-  "versionCode": 2,
-  "versionName": "1.0.2",
+  "versionCode": 3,
+  "versionName": "1.0.3",
   "apkUrl": "https://raw.githubusercontent.com/adityakewat33-jpg/arrrowjam/main/arrowjam.apk",
-  "releaseNotes": "• 700 progressive puzzle levels\n• Rebalanced hint shop packages\n• Auto-updater & real-time level synchronization",
+  "releaseNotes": "• Fixed 50 coins reward per level completion\n• 700 progressive levels & auto-updater",
   "forceUpdate": false
 }

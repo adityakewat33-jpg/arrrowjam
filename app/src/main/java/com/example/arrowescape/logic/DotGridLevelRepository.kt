@@ -177,10 +177,8 @@ object GameManager {
         if (isFirstTime) {
             set.add(levelId.toString())
             prefs.edit().putStringSet(KEY_COMPLETED_LEVELS, set).apply()
-            // Earn coins based on level difficulty (20 coins base + bonus for bigger mazes)
-            val level = DotGridLevelRepository.getLevel(levelId)
-            val coinReward = (20 + (level.arrows.size / 5) * 5).coerceIn(20, 100)
-            addCoins(coinReward)
+            // Fixed 50 coins per level completion
+            addCoins(50)
         }
         return isFirstTime
     }
